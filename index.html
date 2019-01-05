@@ -30,9 +30,11 @@
 			}
 
 		</style>
-		<script src="https://cdn.rawgit.com/mrdoob/three.js/r87/build/three.js"></script>
-		<script src="https://cdn.rawgit.com/mrdoob/three.js/r87/examples/js/vr/WebVR.js"></script>
-		<script src="https://cdn.rawgit.com/dataarts/dat.guiVR/master/build/datguivr.js"></script>
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/r95/build/three.js"></script>
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/r95/examples/js/vr/WebVR.js"></script>
+		<!-- <script src="./test/three.js"></script> -->
+		<!-- <script src="./test/WebVR.js"></script> -->
+		<!-- <script src="./test/datguivr.js"></script> -->
 		<script src="VRController.js"></script>
 	</head>
 	<body>
@@ -54,10 +56,7 @@
 //  Here’s how to download and configure one that does:
 //  https://webvr.rocks
 
-WEBVR.checkAvailability().catch( function( message ){
-
-	document.body.appendChild( WEBVR.getMessageContainer( message ))
-})
+//  WebVR button indicates availability directly
 
 
 //  Regardless, let’s kick off the Three.js basics here:
@@ -72,7 +71,9 @@ renderer.setClearColor( 0xCCCCCC )
 renderer.setPixelRatio( window.devicePixelRatio )
 renderer.setSize( window.innerWidth, window.innerHeight )
 renderer.vr.enabled  = true
-renderer.vr.standing = true
+// Oculus go compat fix for THREE r95
+// See: https://github.com/stewdio/THREE.VRController/pull/20/files?utf8=%E2%9C%93&diff=unified&w=1
+// renderer.vr.standing = true
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 document.body.appendChild( renderer.domElement )
@@ -90,12 +91,7 @@ scene.add( camera )
 //  This button is important. It toggles between normal in-browser view
 //  and the brand new WebVR in-your-goggles view!
 
-WEBVR.getVRDisplay( function( display ){
-
-	renderer.vr.setDevice( display )
-	document.body.appendChild( WEBVR.getButton( display, renderer.domElement ))
-})
-
+document.body.appendChild( WEBVR.createButton( renderer ) );
 
 //  Should things change in the future we’ve got you covered:
 
@@ -242,7 +238,8 @@ window.addEventListener( 'vr controller connected', function( event ){
 	//  instead of in your hands! And for seated experiences this will have no
 	//  effect, so safe to do either way:
 
-	controller.standingMatrix = renderer.vr.getStandingMatrix()
+	// controller.standingMatrix = renderer.vr.getStandingMatrix()
+	if ( !controller.armModel ) controller.standingMatrix = renderer.vr.getStandingMatrix();
 
 
 	//  And for 3DOF (seated) controllers you need to set the controller.head
@@ -335,7 +332,7 @@ function update(){
 	if( torus.rotation.y > Math.PI ) torus.rotation.y -= ( Math.PI * 2 )//  Keep DAT GUI display tidy!
 	renderer.render( scene, camera )
 }
-renderer.animate( update )
+renderer.setAnimationLoop( update );
 
 
 
