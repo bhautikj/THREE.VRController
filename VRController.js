@@ -96,6 +96,9 @@ THREE.VRController = function( gamepad ){
 	this.gamepad = gamepad
 	this.name    = gamepad.id
 	this.dof     = gamepad.pose ? 3 * ( +gamepad.pose.hasOrientation + +gamepad.pose.hasPosition ) : 0
+	
+	// Record hand
+	this.hand 	 = gamepad.hand;
 
 
 	//  If the gamepad has a hapticActuators Array with something valid in
