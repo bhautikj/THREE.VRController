@@ -293,7 +293,7 @@ THREE.VRController = function( gamepad ){
 		controllerInfo = '> #'+ controller.gamepad.index +' '+ controller.gamepad.id +' (Handedness: '+ handedness +') ',
 		axesNames      = Object.keys( axes.byName ),
 		axesChanged    = false
-
+		
 
 		//  Did the handedness change?
 
@@ -317,10 +317,10 @@ THREE.VRController = function( gamepad ){
 				axesChanged = false
 				axes.byName[ axesName ].forEach( function( index ){
 
-					if( gamepad.axes[ index ] !== axes[ index ]){
+					if( controller.gamepad.axes[ index ] !== axes[ index ]){
 
 						axesChanged = true
-						axes[ index ] = gamepad.axes[ index ]
+						axes[ index ] = controller.gamepad.axes[ index ]
 					}
 					axesValues.push( axes[ index ])
 				})
@@ -344,7 +344,7 @@ THREE.VRController = function( gamepad ){
 
 		else {
 
-			gamepad.axes.forEach( function( axis, i ){
+			controller.gamepad.axes.forEach( function( axis, i ){
 
 				if( axis !== axes[ i ]){
 
@@ -375,9 +375,9 @@ THREE.VRController = function( gamepad ){
 			//  or a 1. In that case 'value' usually corresponds to the press
 			//  state: 0 = not pressed, 1 = is pressed.
 
-			if( button.value !== gamepad.buttons[ i ].value ){
+			if( button.value !== controller.gamepad.buttons[ i ].value ){
 
-				button.value = gamepad.buttons[ i ].value
+				button.value = controller.gamepad.buttons[ i ].value
 				if( verbosity >= 0.6 ) console.log( controllerAndButtonInfo +'value changed', button.value )
 				controller.dispatchEvent({ type: button.name +' value changed', value: button.value })
 				if( isPrimary ) controller.dispatchEvent({ type: 'primary value changed', value: button.value })
@@ -390,9 +390,9 @@ THREE.VRController = function( gamepad ){
 			//  analog-style value property to make rules like: for 0.0 .. 0.1
 			//  touch = true, and for >0.1 press = true. 
 
-			if( button.isTouched !== gamepad.buttons[ i ].touched ){
+			if( button.isTouched !== controller.gamepad.buttons[ i ].touched ){
 
-				button.isTouched = gamepad.buttons[ i ].touched
+				button.isTouched = controller.gamepad.buttons[ i ].touched
 				eventAction = button.isTouched ? 'began' : 'ended'
 				if( verbosity >= 0.5 ) console.log( controllerAndButtonInfo +'touch '+ eventAction )
 				controller.dispatchEvent({ type: button.name +' touch '+ eventAction })
@@ -402,9 +402,9 @@ THREE.VRController = function( gamepad ){
 
 			//  This is the least complicated button property.
 
-			if( button.isPressed !== gamepad.buttons[ i ].pressed ){
+			if( button.isPressed !== controller.gamepad.buttons[ i ].pressed ){
 
-				button.isPressed = gamepad.buttons[ i ].pressed
+				button.isPressed = controller.gamepad.buttons[ i ].pressed
 				eventAction = button.isPressed ? 'began' : 'ended'
 				if( verbosity >= 0.5 ) console.log( controllerAndButtonInfo +'press '+ eventAction )
 				controller.dispatchEvent({ type: button.name +' press '+ eventAction })
