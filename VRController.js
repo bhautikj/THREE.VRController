@@ -422,11 +422,16 @@ THREE.VRController.prototype.constructor = THREE.VRController
 //  Update the position, orientation, and button states,
 //  fire button events if nessary.
 
-THREE.VRController.prototype.update = function(){
+THREE.VRController.prototype.update = function(gamepadCurrent){
+
+  if (this.gamepad != gamepadCurrent) {
+  	this.gamepad = gamepadCurrent;
+  }
 
 	var
 	gamepad = this.gamepad,
 	pose = gamepad.pose
+
 
 
 	//  ORIENTATION.
@@ -664,7 +669,7 @@ THREE.VRController.verbosity = 0//0.5 or 0.7 are good...
 //  and have some connection / disconnection handlers.
 
 THREE.VRController.controllers = []
-THREE.VRController.onGamepadConnect = function( gamepad ){
+THREE.VRController.onGamepadConnect = function( gamepad, index ){
 
 
 	//  Let’s create a new controller object
@@ -698,7 +703,7 @@ THREE.VRController.onGamepadConnect = function( gamepad ){
 
 	}, 500 )
 }
-THREE.VRController.onGamepadDisconnect = function( gamepad ){
+THREE.VRController.onGamepadDisconnect = function( index ){
 
 
 	//  We need to find the controller that holds the reference to this gamepad.
@@ -782,9 +787,8 @@ THREE.VRController.update = function(){
 			//  to initiate it! Either way we need to call update() on it.
 
 			if( gamepad.pose.orientation !== null || gamepad.pose.position !== null ){
-
-				if( this.controllers[ i ] === undefined ) THREE.VRController.onGamepadConnect( gamepad )
-				this.controllers[ i ].update()
+				if( this.controllers[ i ] === undefined ) THREE.VRController.onGamepadConnect( gamepad, i )
+				this.controllers[ i ].update(gamepad);
 			}
 
 
@@ -794,8 +798,10 @@ THREE.VRController.update = function(){
 			//  the controller! (At least in Chromium.) That doesn’t seem like
 			//  the API’s intended behavior but it’s what I see in practice.
 
-			else if( this.controllers[ i ] !== undefined ) THREE.VRController.onGamepadDisconnect( gamepad )
+			else if( this.controllers[ i ] === undefined ) THREE.VRController.onGamepadDisconnect( i )
 		}
+    // If the controller is disconnected and remove then we should update this.controllers accordingly 
+		else if( this.controllers[ i ] !== undefined ) THREE.VRController.onGamepadDisconnect( i );
 	}
 }
 THREE.VRController.inspect = function(){
