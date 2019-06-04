@@ -422,12 +422,7 @@ THREE.VRController.prototype.constructor = THREE.VRController
 //  Update the position, orientation, and button states,
 //  fire button events if nessary.
 
-THREE.VRController.prototype.update = function(gamepadCurrent){
-
-  if (this.gamepad != gamepadCurrent) {
-  	this.gamepad = gamepadCurrent;
-  }
-
+THREE.VRController.prototype.update = function(){
 	var
 	gamepad = this.gamepad,
 	pose = gamepad.pose
@@ -788,7 +783,10 @@ THREE.VRController.update = function(){
 
 			if( gamepad.pose.orientation !== null || gamepad.pose.position !== null ){
 				if( this.controllers[ i ] === undefined ) THREE.VRController.onGamepadConnect( gamepad, i )
-				this.controllers[ i ].update(gamepad);
+				if(this.controllers[ i ].gamepad != gamepad) {
+						this.controllers[ i ].gamepad = gamepad;
+				}
+				this.controllers[ i ].update();
 			}
 
 
